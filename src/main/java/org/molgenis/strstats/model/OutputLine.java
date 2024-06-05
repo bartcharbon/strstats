@@ -13,6 +13,8 @@ public class OutputLine {
     String chrom;
     String pos;
     String id;
+    String allele1_ru;
+    String allele2_ru;
     String allele1_plus;
     String allele1_min;
     String allele2_plus;

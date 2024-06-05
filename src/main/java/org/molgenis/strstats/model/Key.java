@@ -14,5 +14,6 @@ public class Key {
     String pos;
     String allele;
     Strand strand;
+    String ru;
 
 }

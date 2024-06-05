@@ -81,7 +81,7 @@ class AppCommandLineRunner implements CommandLineRunner {
         List<TsvLine> tsvLines = readTsvFile(tsvPath);
         Map<Key, Integer> counts = new HashMap<>();
         for (TsvLine tsvLine : tsvLines) {
-            Key key = Key.builder().chrom(tsvLine.getChrom()).pos(tsvLine.getPos()).allele(tsvLine.getAllele()).strand(tsvLine.getStrand().equals("-") ? MIN : PLUS).build();
+            Key key = Key.builder().chrom(tsvLine.getChrom()).pos(tsvLine.getPos()).allele(tsvLine.getAllele()).ru(tsvLine.getRepeatUnit()).strand(tsvLine.getStrand().equals("-") ? MIN : PLUS).build();
             if (counts.containsKey(key)) {
                 Integer count = counts.get(key);
                 count++;
@@ -107,10 +107,12 @@ class AppCommandLineRunner implements CommandLineRunner {
                     throw new RuntimeException("More than 2 alleles encountered.");
                 }
                 if (allele1 != null) {
+                    outputLine.allele1_ru(allele1.getRu());
                     if (allele1.getMinValue() != null) outputLine.allele1_min(allele1.getMinValue().toString());
                     if (allele1.getPlusValue() != null) outputLine.allele1_plus(allele1.getPlusValue().toString());
                 }
                 if (allele2 != null) {
+                    outputLine.allele2_ru(allele2.getRu());
                     if (allele2.getMinValue() != null) outputLine.allele2_min(allele2.getMinValue().toString());
                     if (allele2.getPlusValue() != null) outputLine.allele2_plus(allele2.getPlusValue().toString());
                 }
@@ -127,7 +129,7 @@ class AppCommandLineRunner implements CommandLineRunner {
             Key key = entry.getKey();
             String stringKey = key.getChrom()+":"+key.getPos();
             alleles = allelesPerStr.get(stringKey);
-            Allele allele = Allele.builder().build();
+            Allele allele = Allele.builder().ru(key.getRu()).build();
             if(allelesPerStr.containsKey(stringKey)){
                 if(alleles.containsKey(key.getAllele())){
                     allele = alleles.get(key.getAllele());
@@ -139,7 +141,7 @@ class AppCommandLineRunner implements CommandLineRunner {
                 }
             }else{
                 alleles = new HashMap<>();
-                allele = Allele.builder().build();
+                allele = Allele.builder().ru(key.getRu()).build();
                 if(key.getStrand() == MIN){
                     allele.setMinValue(entry.getValue());
                 }else{
@@ -230,8 +232,8 @@ class AppCommandLineRunner implements CommandLineRunner {
 
     private static void writeToFile(Path output, Collection<OutputLine> lines) {
         try (CSVWriter writer = new CSVWriter(new FileWriter(output.toString()), '\t', DEFAULT_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTER, DEFAULT_LINE_END)) {
-            writer.writeNext(new String[]{"Chrom", "Pos", "Id", "Allele1_min", "Allele1_plus", "Allele2_min", "Allele2_plus"}, false);
-            lines.forEach(line -> writer.writeNext(new String[]{line.getChrom(), line.getPos(), line.getId(), line.getAllele1_min(), line.getAllele1_plus(), line.getAllele2_min(), line.getAllele2_plus()}, false));
+            writer.writeNext(new String[]{"Chrom", "Pos", "Id", "Allele1_RU", "Allele2_RU", "Allele1_min", "Allele1_plus", "Allele2_min", "Allele2_plus"}, false);
+            lines.forEach(line -> writer.writeNext(new String[]{line.getChrom(), line.getPos(), line.getId(), line.getAllele1_ru(), line.getAllele2_ru(), line.getAllele1_min(), line.getAllele1_plus(), line.getAllele2_min(), line.getAllele2_plus()}, false));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

@@ -29,4 +29,9 @@ public class TsvLine {
             column = "strand",
             required = true)
     String strand;
+
+    @CsvBindByName(
+            column = "repeat_unit\t",
+            required = true)
+    String repeatUnit;
 }

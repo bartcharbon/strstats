@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class Allele {
     Integer plusValue;
     Integer minValue;
+    String ru;
 }
